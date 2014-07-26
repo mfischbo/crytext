@@ -85,12 +85,15 @@ void MainWindow::on_actionNew_triggered()
 
 void MainWindow::on_actionSave_as_triggered()
 {
-    const QString filename = QFileDialog::getSaveFileName(
+    QString filename = QFileDialog::getSaveFileName(
                 this, tr("Save as"),
                 service->getSettings()->getRecentDirectory(),
                 tr("Crytext Files (*.cry)"));
 
     if (filename != 0) {
+        if (!filename.endsWith(".cry"))
+            filename.append(".cry");
+
         qDebug() << "Saving editor contents to " << filename;
         service->saveAs(filename, ui->plainTextEdit->document());
         this->currentFile = filename;

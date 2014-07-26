@@ -1,7 +1,7 @@
 crytext
 =======
 
-Crytext is a small and simple text editor that automagically encrypts your text files when you save them to your hard disk. It uses stnadard cryptographic algorithms (AES / RSA) to achieve this. It is possible to save files in such a way that you can exchange them with others.
+Crytext is a small and simple text editor that automagically encrypts your text files before saving them to your hard disk. It uses standard cryptographic algorithms (AES / RSA) to achieve this. It is possible to save files in such a way that you can exchange them with others.
 
 To keep away the hassle to deal with the security details crytext introduces a concept of "stickers" or maby better pictured as address labels. Each user using crytext has it's own private sticker that he can exchange with others. If Alice wants to send Bob a crytext file, she would only need to attach bob's sticker to the file, so he could open in.
 

@@ -45,6 +45,20 @@ public:
     CryptoPP::RSA::PrivateKey* getRSAPrivateKey();
 
     /**
+     * @brief fromHex decodes a hex string into a string containing the bytes
+     * @param str The hex string
+     * @param output The output where to put the result to
+     */
+    void fromHex(const std::string &str, std::string &output) const;
+
+    /**
+     * @brief toHex encodes arbitrary byte data into a hex encoded string
+     * @param str The byte source to encode
+     * @param output The output where to put the result to
+     */
+    void toHex(const std::string &str, std::string &output) const;
+
+    /**
      * @brief toBase64 Encodes a string to base64 encoding
      * @param str The string that should be encoded
      * @param output The string to which the base64 string is written to

@@ -29,6 +29,7 @@ using CryptoPP::HexEncoder;
 using CryptoPP::Base64Decoder;
 using CryptoPP::Base64Encoder;
 using CryptoPP::StringSink;
+using CryptoPP::StringSource;
 using CryptoPP::StreamTransformationFilter;
 
 
@@ -183,6 +184,16 @@ CryptUtils::readPublicKeyFromHex(QString &base64, CryptoPP::RSA::PublicKey &pk) 
     // check the key for validity
     AutoSeededRandomPool rng;
     return pk.Validate(rng, 3);
+}
+
+void
+CryptUtils::fromHex(const std::string &str, std::string &output) const {
+    StringSource sSource(str, true, new HexDecoder(new StringSink(output)));
+}
+
+void
+CryptUtils::toHex(const std::string &str, std::string &output) const {
+    StringSource sSource(str, true, new HexEncoder(new StringSink(output)));
 }
 
 void

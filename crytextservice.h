@@ -7,12 +7,15 @@
 #include <QTextDocument>
 
 #include "cryptutils.h"
+#include "model/settings.h"
 #include "sticker.h"
 
+namespace crytext {
 class CryTextService
 {
 private:
-    QSettings*                    settings;
+
+    Settings*                     settings;
     CryptUtils*                   utils;
     QList<Sticker*>               stickers;
     QList<Sticker*>               recipients;
@@ -82,13 +85,7 @@ public:
      * @brief getSettings Returns a pointer on the QSettings for direct access
      * @return The QSettings
      */
-    QSettings *getSettings();
-
-    /**
-     * @brief getRecentDirectory Returns a QString with the recent directory the user used
-     * @return The users recent directory
-     */
-    QString getRecentDirectory();
+    Settings *getSettings();
 };
-
+}
 #endif // CRYTEXTSERVICE_H

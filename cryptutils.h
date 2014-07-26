@@ -20,7 +20,7 @@ public:
      * @param dirname The name of the directory to read from
      * @return True, if the keys could be read, false otherwise
      */
-    bool readKeyPairFrom(QString &dirname);
+    bool readKeyPairFrom(const QString &dirname);
 
     /**
      * @brief generateRSAKeyPair Generates a new RSA keypair for the user and stores it
@@ -28,7 +28,7 @@ public:
      * @param dirname The name of the directory to store the keypair
      * @return True on success, false otherwise
      */
-    bool generateRSAKeyPair(QString &dirname);
+    bool generateRSAKeyPair(const QString &dirname);
 
     /**
      * @brief getRSAPublicKey Returns the users RSA public key

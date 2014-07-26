@@ -13,24 +13,25 @@
 #include "cryptutils.h"
 #include "sticker.h"
 
+using namespace crytext;
 
 CryTextService::CryTextService()
 {
-    this->settings = new QSettings(QString("de.mfischbo"), QString("crytext"));
-    qDebug() << "Settings directory is " << this->settings->fileName();
+    //this->settings = new QSettings(QString("de.mfischbo"), QString("crytext"));
+    this->settings = new Settings();
+    qDebug() << "Settings directory is " << this->settings->getDataDirectory();
 
     utils = new CryptUtils();
     stickers = QList<Sticker*>();
     recipients = QList<Sticker*>();
 
     // check if a data directory is set and a rsa key pair exists
-    if (this->settings->contains("Settings/DataDir")) {
-        QString datadir = this->settings->value("Settings/DataDir").toString();
+    if (this->settings->getDataDirectory().length() > 0) {
 
-        bool containsKeys = this->utils->readKeyPairFrom(datadir);
+        bool containsKeys = this->utils->readKeyPairFrom(settings->getDataDirectory());
         if (!containsKeys) {
-            this->utils->generateRSAKeyPair(datadir);
-            this->utils->readKeyPairFrom(datadir);
+            this->utils->generateRSAKeyPair(settings->getDataDirectory());
+            this->utils->readKeyPairFrom(settings->getDataDirectory());
         }
 
         // read all stickers
@@ -38,11 +39,11 @@ CryTextService::CryTextService()
 
         QStringList stFiles;
 
-        QDir d(datadir);
+        QDir d(settings->getDataDirectory());
         stFiles = d.entryList(filter);
         QStringListIterator it(stFiles);
         while (it.hasNext()) {
-            QString fName = datadir;//
+            QString fName = settings->getDataDirectory();//
             if (!fName.endsWith("/"))
                 fName.append("/");
             fName.append(it.next());
@@ -72,14 +73,15 @@ QTextDocument* CryTextService::open(const QString &filename) {
         QTextDocument *retval = new QTextDocument();
         retval->setPlainText(plaintext);
 
-        this->setRecentDir(filename);
+        settings->setRecentDirectory(filename);
         return retval;
     }
 
     // open encrypted file
     if (filename.endsWith(".cry")) {
         QTextStream inStream(&file);
-        CryTextFile ctf(inStream, this->utils, settings->value("Sticker/EMail", "john.doe@example.com").toString());
+        CryTextFile ctf(inStream, this->utils,
+                        settings->getStickerEMail());
 
         ctf.decrypt(this->utils->getRSAPrivateKey());
         QString plaintext = ctf.getPlainText();
@@ -87,7 +89,7 @@ QTextDocument* CryTextService::open(const QString &filename) {
         QTextDocument *retval = new QTextDocument();
         retval->setPlainText(plaintext);
 
-        this->setRecentDir(filename);
+        settings->setRecentDirectory(filename);
         return retval;
     }
     return 0;
@@ -106,7 +108,7 @@ CryTextService::saveAs(const QString &filename, const QTextDocument* document) {
     }
     QTextStream ts(&f);
     ts << "====BOUNDARY:";
-    ts << this->getSettings()->value("Sticker/EMail", "john.doe@example.com").toString() << "\n";
+    ts << settings->getStickerEMail() << "\n";
     ctf.saveTo(ts);
 
     // create entries for each other recipient
@@ -123,7 +125,7 @@ CryTextService::saveAs(const QString &filename, const QTextDocument* document) {
 
     f.flush();
     f.close();
-    this->setRecentDir(filename);
+    settings->setRecentDirectory(filename);
 }
 
 void
@@ -135,9 +137,9 @@ CryTextService::exportPrivateSicker(QString &filename) {
     }
 
     QTextStream outStream(&f);
-    outStream << this->settings->value("Sticker/EMail").toString() << "\n";
-    outStream << this->settings->value("Sticker/FirstName").toString() << "\n";
-    outStream << this->settings->value("Sticker/LastName").toString() << "\n";
+    outStream << settings->getStickerEMail() << "\n";
+    outStream << settings->getStickerFirstName() << "\n";
+    outStream << settings->getStickerLastName() << "\n";
 
     QString key;
     this->utils->publicKeyAsHex(key);
@@ -145,7 +147,7 @@ CryTextService::exportPrivateSicker(QString &filename) {
     outStream.flush();
     f.flush();
     f.close();
-    this->setRecentDir(filename);
+    settings->setRecentDirectory(filename);
 }
 
 Sticker *
@@ -156,7 +158,7 @@ CryTextService::importSticker(QString &filename) {
     if (sticker != 0) {
 
         // copy the sticker file to the settings directory
-        QString toFile = QString(this->settings->value("Settings/DataDir").toString());
+        QString toFile = settings->getDataDirectory();
         if (!toFile.endsWith("/"))
             toFile.append("/");
         toFile.append(sticker->getEMail());
@@ -166,7 +168,7 @@ CryTextService::importSticker(QString &filename) {
         stickers << sticker;
         return sticker;
     }
-    this->setRecentDir(filename);
+    settings->setRecentDirectory(filename);
     return 0;
 }
 
@@ -181,8 +183,10 @@ CryTextService::removeStickerByEmail(QString email) {
             this->stickers.removeOne(s);
 
             // delete the sticker file
+            QString dir = QString(settings->getDataDirectory());
             QString fName = QString("/").append(s->getEMail()->append(".cts"));
-            QFile f(this->settings->value("Settings/DataDir", "").toString().append(fName));
+
+            QFile f(dir.append(fName));
             if (f.exists()) {
                 f.remove();
                 return true;
@@ -215,17 +219,6 @@ CryTextService::getAvailableStickers() {
 }
 
 
-QSettings* CryTextService::getSettings() {
+Settings* CryTextService::getSettings() {
     return settings;
-}
-
-QString
-CryTextService::getRecentDirectory() {
-    return this->settings->value("UI/RecentDir", QDir::homePath()).toString();
-}
-
-void
-CryTextService::setRecentDir(QString filename) {
-    filename.remove(filename.lastIndexOf("/"), filename.length()-1);
-    settings->setValue("UI/RecentDir", filename);
 }

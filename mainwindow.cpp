@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
 
-    this->service = new CryTextService();
+    this->service = new crytext::CryTextService();
     ui->setupUi(this);
     this->setWindowTitle(tr("CryText // New File"));
 
@@ -43,7 +43,7 @@ MainWindow::~MainWindow()
 void MainWindow::on_actionOpen_triggered()
 {
     QString filename = QFileDialog::getOpenFileName(this,
-           tr("Open File"), service->getRecentDirectory(),
+           tr("Open File"), service->getSettings()->getRecentDirectory(),
            tr("Crytext Files (*.cry);; Text Files (*.*)"));
 
     if (filename.length() > 0) {
@@ -74,7 +74,11 @@ void MainWindow::on_actionNew_triggered()
 
 void MainWindow::on_actionSave_as_triggered()
 {
-    const QString filename = QFileDialog::getSaveFileName(this, tr("Save as"), service->getRecentDirectory(), tr("Crytext Files (*.cry)"));
+    const QString filename = QFileDialog::getSaveFileName(
+                this, tr("Save as"),
+                service->getSettings()->getRecentDirectory(),
+                tr("Crytext Files (*.cry)"));
+
     if (filename != 0) {
         qDebug() << "Saving editor contents to " << filename;
         service->saveAs(filename, ui->plainTextEdit->document());
@@ -97,7 +101,12 @@ void MainWindow::on_actionStickers_triggered()
 // import sticker
 void MainWindow::on_pushButton_2_clicked()
 {
-    QString filename = QFileDialog::getOpenFileName(this, tr("Choose a sticker to import"), service->getRecentDirectory(), "Crytext Sticker (*.cts)");
+    QString filename = QFileDialog::getOpenFileName(this,
+        tr("Choose a sticker to import"),
+        service->getSettings()->getRecentDirectory(),
+        "Crytext Sticker (*.cts)");
+
+
     if (filename.length() > 0) {
         Sticker *s = this->service->importSticker(filename);
         if (s != 0) {

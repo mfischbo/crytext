@@ -44,7 +44,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    CryTextService *service;
+    crytext::CryTextService *service;
     QString currentFile;
 
     void runCryptSetup();

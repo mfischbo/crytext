@@ -24,7 +24,7 @@ CryptUtils::CryptUtils()
 }
 
 
-bool CryptUtils::generateRSAKeyPair(QString &dirname) {
+bool CryptUtils::generateRSAKeyPair(const QString &dirname) {
 
     CryptoPP::AutoSeededRandomPool rnd;
     CryptoPP::RSA::PrivateKey key;
@@ -53,7 +53,7 @@ bool CryptUtils::generateRSAKeyPair(QString &dirname) {
     return true;
 }
 
-bool CryptUtils::readKeyPairFrom(QString &dirname) {
+bool CryptUtils::readKeyPairFrom(const QString &dirname) {
 
     qDebug() << "Reading keypair from " << dirname;
 

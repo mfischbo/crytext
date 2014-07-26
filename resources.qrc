@@ -12,5 +12,8 @@
         <file>images/edit_file-32.png</file>
         <file>images/about-32.png</file>
         <file>images/email-32.png</file>
+        <file>images/crypted-20.png</file>
+        <file>images/crypted-32.png</file>
+        <file>images/message-32.png</file>
     </qresource>
 </RCC>

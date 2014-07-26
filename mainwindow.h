@@ -45,6 +45,8 @@ private slots:
 
     void on_actionSticker_Mail_triggered();
 
+    void on_actionSend_Mail_triggered();
+
 private:
     Ui::MainWindow *ui;
     crytext::CryTextService *service;

@@ -113,7 +113,20 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QListWidget" name="stickerList"/>
+           <widget class="QListWidget" name="stickerList">
+            <property name="dragEnabled">
+             <bool>false</bool>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="viewMode">
+             <enum>QListView::ListMode</enum>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QPushButton" name="btn_RemoveSticker">
@@ -198,6 +211,7 @@
    <addaction name="actionSave"/>
    <addaction name="actionSave_as"/>
    <addaction name="actionClose"/>
+   <addaction name="actionSend_Mail"/>
    <addaction name="separator"/>
    <addaction name="actionSettings"/>
    <addaction name="actionSticker_Mail"/>
@@ -284,6 +298,15 @@
    </property>
    <property name="text">
     <string>Sticker Mail</string>
+   </property>
+  </action>
+  <action name="actionSend_Mail">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/images/message-32.png</normaloff>:/images/images/message-32.png</iconset>
+   </property>
+   <property name="text">
+    <string>Send Mail</string>
    </property>
   </action>
  </widget>

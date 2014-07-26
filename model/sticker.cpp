@@ -32,8 +32,7 @@ Sticker::~Sticker() {
     //delete this->publicKey;
 }
 
-QString*
-Sticker::getEMail() {
+QString *Sticker::getEMail() {
     return &email;
 }
 

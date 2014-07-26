@@ -9,6 +9,7 @@
 #include <QDebug>
 
 #include "crytextservice.h"
+#include "service/smtpservice.h"
 #include "model/crytextfile.h"
 #include "model/sticker.h"
 #include "util/cryptutils.h"
@@ -125,6 +126,23 @@ CryTextService::saveAs(const QString &filename, const QTextDocument* document) {
     f.flush();
     f.close();
     settings->setRecentDirectory(filename);
+}
+
+void
+CryTextService::sendAsEMail(QString subject, QString message, const QTextDocument* doc) {
+
+    // encrypt the file
+    QListIterator<Sticker*> it = QListIterator<Sticker*>(this->recipients);
+    SMTPService mailer(this);
+
+    while (it.hasNext()) {
+        Sticker *s = it.next();
+        qDebug() << "Sending mail message to " << *s->getEMail();
+
+        CryTextFile ctf(doc, this->utils);
+        ctf.encrypt(s->getPublicKey());
+        mailer.sendCrytextFile(s, &ctf, subject, message);
+    }
 }
 
 void

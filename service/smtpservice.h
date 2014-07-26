@@ -25,7 +25,7 @@ public:
     SMTPService(CryTextService* service);
     ~SMTPService();
 
-    bool sendCrytextFile(const Sticker *sticker, const CryTextFile *file);
+    bool sendCrytextFile(Sticker *sticker, CryTextFile *file, const QString &subject, const QString &message);
     bool sendSticker(const QString &recipient, const QString &subject, const QString &message);
 };
 

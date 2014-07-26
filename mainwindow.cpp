@@ -22,17 +22,20 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // build the list of stickers
     QListIterator<crytext::Sticker*> it(*this->service->getAvailableStickers());
+    ui->stickerList->setIconSize(QSize(32, 32));
     while (it.hasNext()) {
         crytext::Sticker *s = it.next();
-        QListWidgetItem *item = new QListWidgetItem(ui->stickerList);
+
         QString txt;
         txt.append(*s->getFirstName());
         txt.append(" ");
         txt.append(*s->getLastName());
+        txt.append("\n").append(*s->getEMail());
 
-        item->setText(txt);
+        QListWidgetItem *item = new QListWidgetItem(QIcon(":/images/images/crypted-32.png"), txt, ui->stickerList);
 
-        item->setData(0, QVariant(*s->getEMail()));
+
+        //item->setData(2, QVariant(*s->getEMail()));
         ui->stickerList->addItem(item);
     }
 }
@@ -129,9 +132,12 @@ void MainWindow::on_pushButton_2_clicked()
             txt.append(*s->getFirstName());
             txt.append(" ");
             txt.append(*s->getLastName());
+            txt.append("\n").append(*s->getEMail());
 
             item->setText(txt);
-            item->setData(0, QVariant(*s->getEMail()));
+            //item->setData(0, QVariant(*s->getEMail()));
+
+            item->setIcon(QIcon(":/images/images/crypted-32.png"));
             ui->stickerList->addItem(item);
         }
     }
@@ -146,12 +152,20 @@ void MainWindow::on_btn_RemoveSticker_clicked()
 
 void MainWindow::on_stickerList_itemDoubleClicked(QListWidgetItem *item)
 {
-    crytext::Sticker *s = service->getStickerByEmail(item->data(0).toString());
-    service->addRecipient(s);
+    // grab the stickers email
+    QString txt = item->text();
+    QStringList sl = txt.split(QRegExp("\n"));
+    if (sl.length() == 2) {
 
-    QLabel *l = new QLabel(ui->Recipients);
-    l->setText(*s->getEMail());
-    ui->Recipients->layout()->addWidget(l);
+        QString email = sl.at(1);
+
+        crytext::Sticker *s = service->getStickerByEmail(email);
+        service->addRecipient(s);
+
+        QLabel *l = new QLabel(ui->Recipients);
+        l->setText(*s->getEMail());
+        ui->Recipients->layout()->addWidget(l);
+    }
 }
 
 void MainWindow::on_actionSave_triggered()
@@ -173,3 +187,8 @@ void MainWindow::on_actionAbout_triggered()
 }
 
 
+
+void MainWindow::on_actionSend_Mail_triggered()
+{
+    service->sendAsEMail("Test", "This is radio active", ui->plainTextEdit->document());
+}

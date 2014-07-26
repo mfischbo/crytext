@@ -6,7 +6,7 @@
 #include "smtpservice.h"
 #include "util/cryptutils.h"
 
-using crytext::SMTPService;
+using namespace crytext;
 using Poco::Net::MailMessage;
 using Poco::Net::MailRecipient;
 using Poco::Net::StringPartSource;
@@ -40,17 +40,51 @@ SMTPService::~SMTPService() {
 
 
 bool
-SMTPService::sendCrytextFile(const Sticker* sticker, const CryTextFile* file) {
+SMTPService::sendCrytextFile(Sticker* sticker, CryTextFile* file, const QString &subject, const QString &message) {
+
+    MailMessage msg;
+    std::string sender = service->getSettings()->getStickerEMail().toStdString();
+    std::string recp = sticker->getEMail()->toStdString();
+    msg.addRecipient(MailRecipient(MailRecipient::PRIMARY_RECIPIENT, recp));
+    msg.setSubject(MailMessage::encodeWord(subject.toStdString()));
+    msg.setContentType("text/plain;charset=UTF-8");
+    msg.setSender(sender);
+
+    // users text
+    StringPartSource *cps = new StringPartSource(message.toStdString());
+    msg.addContent(cps, MailMessage::ENCODING_8BIT);
+
+    // the crytext file
+    QString streamBuffer;
+    QTextStream stream(&streamBuffer);
+
+    // TODO: Crytextfile should have something like .toString() for this
+    stream << "====BOUNDARY:";
+    stream << *sticker->getEMail() << "\n";
+
+    if (file->saveTo(stream)) {
+        StringPartSource *sps = new StringPartSource(stream.readAll().toStdString());
+        msg.addAttachment("testfile.cry", sps);
+        try {
+            this->session->login(method, username, password);
+            this->session->sendMessage(msg);
+            this->session->close();
+        } catch (SMTPException ex) {
+            qDebug() << "Erorr sending the mail. Cause: " << QString::fromStdString(ex.message());
+            this->session->close();
+            return false;
+        } catch (NetException ex2) {
+            qDebug() << "Error sending the mail. Cause: " << QString::fromStdString(ex2.message());
+            return false;
+        }
+        return true;
+    }
     return false;
 }
 
 bool
 SMTPService::sendSticker(const QString &recipient, const QString &subject, const QString &message) {
 
-    /*
-    MailRecipient mRecp = MailRecipient(MailRecipient::PRIMARY_RECIPIENT,
-                 recipient.toStdString());
-    */
     MailMessage msg;
     std::string sender = this->service->getSettings()->getStickerEMail().toStdString();
     msg.addRecipient(MailRecipient(MailRecipient::PRIMARY_RECIPIENT, recipient.toStdString()));

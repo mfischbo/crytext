@@ -46,6 +46,11 @@ public:
     void saveAs(const QString &filename, const QTextDocument* document);
 
     /**
+     * @brief sendAsEMail Sends the current crytext file as attachment to all recipients
+     */
+    void sendAsEMail(QString subject, QString message, const QTextDocument *doc);
+
+    /**
      * @brief exportPrivateSicker exports the users sticker to a file with the given name
      * @param filename The name where to save the sticker
      */

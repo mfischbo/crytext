@@ -48,7 +48,6 @@ private slots:
 private:
     Ui::MainWindow *ui;
     crytext::CryTextService *service;
-    crytext::SMTPService    *mailService;
     QString currentFile;
 };
 

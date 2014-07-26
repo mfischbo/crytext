@@ -200,8 +200,8 @@
    <addaction name="actionClose"/>
    <addaction name="separator"/>
    <addaction name="actionSettings"/>
-   <addaction name="actionAbout"/>
    <addaction name="actionSticker_Mail"/>
+   <addaction name="actionAbout"/>
   </widget>
   <action name="actionOpen">
    <property name="icon">

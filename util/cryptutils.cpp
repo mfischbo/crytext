@@ -19,6 +19,18 @@
 #include <crypto++/files.h>
 
 using namespace crytext;
+using CryptoPP::AES;
+using CryptoPP::AutoSeededRandomPool;
+using CryptoPP::FileSink;
+using CryptoPP::FileSource;
+using CryptoPP::ByteQueue;
+using CryptoPP::HexDecoder;
+using CryptoPP::HexEncoder;
+using CryptoPP::Base64Decoder;
+using CryptoPP::Base64Encoder;
+using CryptoPP::StringSink;
+using CryptoPP::StreamTransformationFilter;
+
 
 CryptUtils::CryptUtils()
 {
@@ -28,15 +40,15 @@ CryptUtils::CryptUtils()
 
 bool CryptUtils::generateRSAKeyPair(const QString &dirname) {
 
-    CryptoPP::AutoSeededRandomPool rnd;
+    AutoSeededRandomPool rnd;
     CryptoPP::RSA::PrivateKey key;
     key.GenerateRandomWithKeySize(rnd, 3072);
 
     // save the private key file
     QString filename = QString(dirname).append("/rsa-private.key");
-    CryptoPP::FileSink fs1(filename.toStdString().c_str());
+    FileSink fs1(filename.toStdString().c_str());
 
-    CryptoPP::ByteQueue queue;
+    ByteQueue queue;
     key.Save(queue);
     queue.CopyTo(fs1);
     fs1.MessageEnd();
@@ -44,8 +56,8 @@ bool CryptUtils::generateRSAKeyPair(const QString &dirname) {
 
     // save the public key file
     QString pubFile = QString(dirname).append("/rsa-public.key");
-    CryptoPP::FileSink fs2(pubFile.toStdString().c_str());
-    CryptoPP::ByteQueue pubQueue;
+    FileSink fs2(pubFile.toStdString().c_str());
+    ByteQueue pubQueue;
     CryptoPP::RSA::PublicKey pubKey(key);
     pubKey.Save(pubQueue);
     pubQueue.CopyTo(fs2);
@@ -66,8 +78,8 @@ bool CryptUtils::readKeyPairFrom(const QString &dirname) {
         return false;
     }
 
-    CryptoPP::FileSource fs1(prvFilename.toStdString().c_str(), true);
-    CryptoPP::ByteQueue queue;
+    FileSource fs1(prvFilename.toStdString().c_str(), true);
+    ByteQueue queue;
     fs1.TransferTo(queue);
     queue.MessageEnd();
     this->privateKey.Load(queue);
@@ -78,13 +90,13 @@ bool CryptUtils::readKeyPairFrom(const QString &dirname) {
         qDebug() << "No key file found at " << pubFilename;
         return false;
     }
-    CryptoPP::FileSource fs2(pubFilename.toStdString().c_str(), true);
-    CryptoPP::ByteQueue q2;
+    FileSource fs2(pubFilename.toStdString().c_str(), true);
+    ByteQueue q2;
     fs2.TransferTo(q2);
     q2.MessageEnd();
     this->publicKey.Load(q2);
 
-    CryptoPP::AutoSeededRandomPool rnd;
+    AutoSeededRandomPool rnd;
     if (!this->privateKey.Validate(rnd, 3)) {
         qDebug() << "Failed to validate private key";
         return false;
@@ -109,25 +121,35 @@ CryptUtils::getRSAPrivateKey() {
 QString
 CryptUtils::aesEncrypt(const byte* key, const byte* iv, QString plaintext) const {
 
+    qDebug() << "Running aesEncrypt() with keysize " << AES::DEFAULT_KEYLENGTH << "\tBlocksize : " << AES::BLOCKSIZE;
+
     std::string stdPlain = plaintext.toStdString();
     std::string stdCipher;
 
-    CryptoPP::AES::Encryption aesEnc(key, CryptoPP::AES::DEFAULT_KEYLENGTH);
+    CryptoPP::AES::Encryption aesEnc(key, AES::DEFAULT_KEYLENGTH);
     CryptoPP::CBC_Mode_ExternalCipher::Encryption cbcEnc(aesEnc, iv);
-    CryptoPP::StreamTransformationFilter stfEnc(cbcEnc, new CryptoPP::StringSink(stdCipher));
+
+    StreamTransformationFilter stfEnc(cbcEnc, new StringSink(stdCipher));
     stfEnc.Put(reinterpret_cast<const unsigned char*> (stdPlain.c_str()), stdPlain.length());
     stfEnc.MessageEnd();
+
+    qDebug() << "Resulted in cipher with length " << stdCipher.length();
+
     return QString::fromStdString(stdCipher);
 }
 
 QString
 CryptUtils::aesDecrypt(const byte* key, const byte* iv, QString ciphertext) const {
+    qDebug() << "Running aesDecrypt() with keysize " << AES::DEFAULT_KEYLENGTH << "\tBlocksize : " << AES::BLOCKSIZE;
 
-    CryptoPP::AES::Decryption aesDecr(key, CryptoPP::AES::DEFAULT_KEYLENGTH);
+    CryptoPP::AES::Decryption aesDecr(key, AES::DEFAULT_KEYLENGTH);
     CryptoPP::CBC_Mode_ExternalCipher::Decryption cbcDecr(aesDecr, iv);
 
+    qDebug() << "Blocksize is : " << AES::BLOCKSIZE;
+    qDebug() << "cipher length: " << ciphertext.length();
+
     std::string stdPlain;
-    CryptoPP::StreamTransformationFilter stfDecryptor(cbcDecr, new CryptoPP::StringSink(stdPlain));
+    StreamTransformationFilter stfDecryptor(cbcDecr, new StringSink(stdPlain));
     stfDecryptor.Put( reinterpret_cast<const unsigned char*>(ciphertext.toStdString().c_str()), ciphertext.length());
     stfDecryptor.MessageEnd();
     return QString::fromStdString(stdPlain);
@@ -135,11 +157,11 @@ CryptUtils::aesDecrypt(const byte* key, const byte* iv, QString ciphertext) cons
 
 void
 CryptUtils::publicKeyAsHex(QString &target) const {
-    CryptoPP::HexEncoder enc;
-    CryptoPP::ByteQueue q;
+    HexEncoder enc;
+    ByteQueue q;
 
     std::string sink;
-    enc.Attach(new CryptoPP::StringSink(sink));
+    enc.Attach(new StringSink(sink));
 
     this->publicKey.Save(q);
     q.CopyTo(enc);
@@ -152,14 +174,14 @@ bool
 CryptUtils::readPublicKeyFromHex(QString &base64, CryptoPP::RSA::PublicKey &pk) const {
     const byte *p = (unsigned char*) base64.toStdString().c_str();
 
-    CryptoPP::HexDecoder dec;
+    HexDecoder dec;
     dec.Put(p, base64.toStdString().length());
     dec.MessageEnd();
 
     pk.Load(dec);
 
     // check the key for validity
-    CryptoPP::AutoSeededRandomPool rng;
+    AutoSeededRandomPool rng;
     return pk.Validate(rng, 3);
 }
 
@@ -168,7 +190,7 @@ CryptUtils::toBase64(const std::string &str, std::string &output) const {
 
     const byte *p = (unsigned char*) str.c_str();
 
-    CryptoPP::Base64Encoder enc;
+    Base64Encoder enc;
     enc.Put(p, str.length());
     enc.MessageEnd();
     CryptoPP::word64 size = enc.MaxRetrievable();
@@ -180,12 +202,15 @@ CryptUtils::toBase64(const std::string &str, std::string &output) const {
 
 void
 CryptUtils::fromBase64(const std::string &str, std::string &output) const {
+
+    qDebug() << "fromBase64() source length is " << str.length() << " bytes";
     const byte *p = (unsigned char*) str.c_str();
 
-    CryptoPP::Base64Decoder dec;
+    Base64Decoder dec;
     dec.Put(p, str.length());
     dec.MessageEnd();
     CryptoPP::word64 size = dec.MaxRetrievable();
+    qDebug() << "fromBase64() decoded size is " << size;
     if (size) {
         output.resize(size);
         dec.Get((byte*) output.data(), output.size());

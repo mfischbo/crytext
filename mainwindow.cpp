@@ -12,13 +12,13 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 
     this->service = new crytext::CryTextService();
-    this->mailService = new crytext::SMTPService(this->service);
 
     ui->setupUi(this);
     this->setWindowTitle(tr("CryText // New File"));
 
     // adjust tab stop width.. who in the world uses 8 spaces for tabs??
     ui->plainTextEdit->setTabStopWidth(4);
+    ui->plainTextEdit->setFont(QFont("Bitstream Vera Sans Mono", 10));
 
     // build the list of stickers
     QListIterator<crytext::Sticker*> it(*this->service->getAvailableStickers());
@@ -54,6 +54,8 @@ void MainWindow::on_actionOpen_triggered()
         QPlainTextDocumentLayout *layout = new QPlainTextDocumentLayout(doc);
         doc->setDocumentLayout(layout);
         ui->plainTextEdit->setDocument(doc);
+        ui->plainTextEdit->setTabStopWidth(4);
+        ui->plainTextEdit->setFont(QFont("Bitstream Vera Sans Mono", 10));
         this->setWindowTitle(filename);
         this->currentFile = filename;
     }

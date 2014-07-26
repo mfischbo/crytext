@@ -115,7 +115,7 @@ CryptUtils::aesEncrypt(const byte* key, const byte* iv, QString plaintext) const
     CryptoPP::AES::Encryption aesEnc(key, CryptoPP::AES::DEFAULT_KEYLENGTH);
     CryptoPP::CBC_Mode_ExternalCipher::Encryption cbcEnc(aesEnc, iv);
     CryptoPP::StreamTransformationFilter stfEnc(cbcEnc, new CryptoPP::StringSink(stdCipher));
-    stfEnc.Put(reinterpret_cast<const unsigned char*> (stdPlain.c_str()), stdPlain.length() + 1);
+    stfEnc.Put(reinterpret_cast<const unsigned char*> (stdPlain.c_str()), stdPlain.length());
     stfEnc.MessageEnd();
     return QString::fromStdString(stdCipher);
 }

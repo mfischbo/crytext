@@ -3,7 +3,7 @@
 
 #include <QDialog>
 #include <QString>
-#include "crytextservice.h"
+#include "service/crytextservice.h"
 #include "ui_settings.h"
 
 class SettingsDialog : public QDialog, public Ui::Dialog

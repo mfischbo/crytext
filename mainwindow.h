@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QListWidgetItem>
-#include "crytextservice.h"
+#include "service/crytextservice.h"
 
 namespace Ui {
 class MainWindow;

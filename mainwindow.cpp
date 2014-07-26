@@ -18,9 +18,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->plainTextEdit->setTabStopWidth(4);
 
     // build the list of stickers
-    QListIterator<Sticker*> it(*this->service->getAvailableStickers());
+    QListIterator<crytext::Sticker*> it(*this->service->getAvailableStickers());
     while (it.hasNext()) {
-        Sticker *s = it.next();
+        crytext::Sticker *s = it.next();
         QListWidgetItem *item = new QListWidgetItem(ui->stickerList);
         QString txt;
         txt.append(*s->getFirstName());
@@ -108,7 +108,7 @@ void MainWindow::on_pushButton_2_clicked()
 
 
     if (filename.length() > 0) {
-        Sticker *s = this->service->importSticker(filename);
+        crytext::Sticker *s = this->service->importSticker(filename);
         if (s != 0) {
             QListWidgetItem *item = new QListWidgetItem(ui->stickerList);
             QString txt;
@@ -132,7 +132,7 @@ void MainWindow::on_btn_RemoveSticker_clicked()
 
 void MainWindow::on_stickerList_itemDoubleClicked(QListWidgetItem *item)
 {
-    Sticker *s = service->getStickerByEmail(item->data(0).toString());
+    crytext::Sticker *s = service->getStickerByEmail(item->data(0).toString());
     service->addRecipient(s);
 
     QLabel *l = new QLabel(ui->Recipients);

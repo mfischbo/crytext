@@ -1,5 +1,5 @@
 #include "settingsdialog.h"
-#include "crytextservice.h"
+#include "service/crytextservice.h"
 #include "model/settings.h"
 #include <QFileDialog>
 #include <QDebug>

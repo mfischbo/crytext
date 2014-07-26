@@ -6,7 +6,12 @@
 #include "smtpservice.h"
 #include "util/cryptutils.h"
 
-using namespace crytext;
+using crytext::SMTPService;
+using Poco::Net::MailMessage;
+using Poco::Net::MailRecipient;
+using Poco::Net::StringPartSource;
+using Poco::Net::NetException;
+using Poco::Net::SMTPException;
 
 SMTPService::SMTPService(CryTextService *service)
 {
@@ -33,63 +38,55 @@ SMTPService::~SMTPService() {
     delete session;
 }
 
-bool
-SMTPService::connect() {
-    try {
-        this->session->login(this->method, this->username, this->password);
-
-    } catch (Poco::Net::NetException e) {
-        qDebug() << "Caught exception during login. Cause: " << QString::fromStdString(e.message());
-    }
-}
-
-bool
-SMTPService::disconnect() {
-    this->session->close();
-    return true;
-}
 
 bool
 SMTPService::sendCrytextFile(const Sticker* sticker, const CryTextFile* file) {
-
+    return false;
 }
 
 bool
-SMTPService::sendSticker(const QString &recipient, const QString *message) {
+SMTPService::sendSticker(const QString &recipient, const QString &subject, const QString &message) {
 
-    Poco::Net::MailRecipient mRecp =
-            Poco::Net::MailRecipient(Poco::Net::MailRecipient::PRIMARY_RECIPIENT,
+    /*
+    MailRecipient mRecp = MailRecipient(MailRecipient::PRIMARY_RECIPIENT,
                  recipient.toStdString());
+    */
+    MailMessage msg;
+    std::string sender = this->service->getSettings()->getStickerEMail().toStdString();
+    msg.addRecipient(MailRecipient(MailRecipient::PRIMARY_RECIPIENT, recipient.toStdString()));
+    msg.setSubject(MailMessage::encodeWord(subject.toStdString()));
+    msg.setContentType("text/plain;charset=UTF-8");
+    msg.setSender(sender);
 
-    Poco::Net::MailMessage m;
-    m.addRecipient(mRecp);
-    m.setSubject(std::string("My Crytext Sticker"));
+    // attach the users message
+    StringPartSource *cps = new StringPartSource(message.toStdString());
+    msg.addContent(cps, MailMessage::ENCODING_8BIT);
+
 
     // add the attachment
-    CryptUtils utils;
     QString streamBuffer;
     QTextStream stream(&streamBuffer);
     service->exportPrivateSticker(stream);
 
-    std::string base64Str;
-    utils.toBase64(stream.readAll().toStdString(), base64Str);
-    Poco::Net::StringPartSource sps(base64Str);
-
     // assemble the filename for the attachment
     QString fname = QString(service->getSettings()->getStickerEMail());
     fname.append(".cts");
-    m.addAttachment(fname.toStdString(), &sps);
 
-    Poco::Net::StringPartSource cps(message->toStdString());
-    m.addContent(&cps);
+    StringPartSource *sps = new StringPartSource(stream.readAll().toStdString());
+    msg.addAttachment(fname.toStdString(), sps);
+
 
     // send the message
     try {
-        this->session->sendMessage(m);
-    } catch (Poco::Net::SMTPException e) {
+        this->session->login(this->method, this->username, this->password);
+        this->session->sendMessage(msg);
+        this->session->close();
+        qDebug() << "Successfully sent message containing users sticker to " << recipient;
+    } catch (SMTPException e) {
         qDebug() << "Caught exception " << QString::fromStdString(e.message()) << " while sending the sticker";
+        this->session->close();
         return false;
-    } catch (Poco::Net::NetException ne) {
+    } catch (NetException ne) {
         qDebug() << "Caught exception " << QString::fromStdString(ne.message()) << " while sending the sticker";
         return false;
     }

@@ -1,13 +1,12 @@
 #include "sendstickerdialog.h"
 #include "ui_sendstickerdialog.h"
 
-SendStickerDialog::SendStickerDialog(crytext::CryTextService *service, crytext::SMTPService *mailer, QWidget *parent) :
+SendStickerDialog::SendStickerDialog(crytext::CryTextService *service, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::SendStickerDialog)
 {
     ui->setupUi(this);
     this->service = service;
-    this->mailer = mailer;
 }
 
 SendStickerDialog::~SendStickerDialog()
@@ -18,9 +17,9 @@ SendStickerDialog::~SendStickerDialog()
 void SendStickerDialog::on_buttonBox_accepted()
 {
     QString recipient = ui->le_Recipient->text();
+    QString subject   = ui->le_Subject->text();
     QString message = ui->te_Message->document()->toPlainText();
 
-    mailer->connect();
-    mailer->sendSticker(recipient, &message);
-    mailer->disconnect();
+    crytext::SMTPService mailer(service);
+    mailer.sendSticker(recipient, subject, message);
 }

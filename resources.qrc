@@ -11,5 +11,6 @@
         <file>images/folder.png</file>
         <file>images/edit_file-32.png</file>
         <file>images/about-32.png</file>
+        <file>images/email-32.png</file>
     </qresource>
 </RCC>

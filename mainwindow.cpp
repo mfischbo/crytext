@@ -67,7 +67,7 @@ void MainWindow::on_actionSettings_triggered()
 
 void MainWindow::on_actionSticker_Mail_triggered()
 {
-    SendStickerDialog* d = new SendStickerDialog(this->service, this->mailService, this);
+    SendStickerDialog* d = new SendStickerDialog(this->service, this);
     d->show();
 }
 

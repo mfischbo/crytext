@@ -7,6 +7,8 @@
 #include "model/crytextfile.h"
 #include "model/sticker.h"
 
+using Poco::Net::SMTPClientSession;
+
 namespace crytext {
 
 class SMTPService
@@ -16,19 +18,15 @@ private :
     std::string hostname;
     std::string username;
     std::string password;
-    Poco::Net::SMTPClientSession::LoginMethod method;
-
-    Poco::Net::SMTPClientSession* session;
+    SMTPClientSession::LoginMethod method;
+    SMTPClientSession* session;
 
 public:
     SMTPService(CryTextService* service);
     ~SMTPService();
 
-    bool connect();
-    bool disconnect();
-
     bool sendCrytextFile(const Sticker *sticker, const CryTextFile *file);
-    bool sendSticker(const QString &recipient, const QString *message);
+    bool sendSticker(const QString &recipient, const QString &subject, const QString &message);
 };
 
 }

@@ -14,7 +14,7 @@ class SendStickerDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit SendStickerDialog(crytext::CryTextService *service, crytext::SMTPService *mailer, QWidget *parent = 0);
+    explicit SendStickerDialog(crytext::CryTextService *service, QWidget *parent = 0);
     ~SendStickerDialog();
 
 private slots:
@@ -23,7 +23,6 @@ private slots:
 private:
     Ui::SendStickerDialog *ui;
     crytext::CryTextService *service;
-    crytext::SMTPService *mailer;
 };
 
 #endif // SENDSTICKERDIALOG_H

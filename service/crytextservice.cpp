@@ -128,25 +128,31 @@ CryTextService::saveAs(const QString &filename, const QTextDocument* document) {
 }
 
 void
-CryTextService::exportPrivateSicker(QString &filename) {
+CryTextService::exportPrivateSticker(QString &filename) {
 
     QFile f(filename);
     if (!f.open(QIODevice::Text | QIODevice::WriteOnly)) {
         qDebug() << "Unable to open device at " << filename;
     }
-
     QTextStream outStream(&f);
-    outStream << settings->getStickerEMail() << "\n";
-    outStream << settings->getStickerFirstName() << "\n";
-    outStream << settings->getStickerLastName() << "\n";
+    this->exportPrivateSticker(outStream);
 
-    QString key;
-    this->utils->publicKeyAsHex(key);
-    outStream << key;
-    outStream.flush();
     f.flush();
     f.close();
     settings->setRecentDirectory(filename);
+}
+
+void
+CryTextService::exportPrivateSticker(QTextStream &stream) {
+
+    stream << settings->getStickerEMail() << "\n";
+    stream << settings->getStickerFirstName() << "\n";
+    stream << settings->getStickerLastName() << "\n";
+
+    QString key;
+    this->utils->publicKeyAsHex(key);
+    stream << key;
+    stream.flush();
 }
 
 Sticker *

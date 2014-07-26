@@ -69,7 +69,7 @@ void SettingsDialog::on_btn_ExSticker_clicked()
 
     if (!filename.endsWith(".cts"))
         filename.append(".cts");
-    service->exportPrivateSicker(filename);
+    service->exportPrivateSticker(filename);
 }
 
 void SettingsDialog::on_cb_SmtpAuthMethod_currentIndexChanged(const QString &m)

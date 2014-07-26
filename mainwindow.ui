@@ -201,6 +201,7 @@
    <addaction name="separator"/>
    <addaction name="actionSettings"/>
    <addaction name="actionAbout"/>
+   <addaction name="actionSticker_Mail"/>
   </widget>
   <action name="actionOpen">
    <property name="icon">
@@ -274,6 +275,11 @@
    </property>
    <property name="toolTip">
     <string>Infos</string>
+   </property>
+  </action>
+  <action name="actionSticker_Mail">
+   <property name="text">
+    <string>Sticker Mail</string>
    </property>
   </action>
  </widget>

@@ -14,7 +14,7 @@
 #define SMTP_USER       "SMTP/Username"
 #define SMTP_PASSWORD   "SMTP/Password"
 #define SMTP_HOST       "SMTP/Host"
-#define SMTP_PORT       "SMTP/Port"
+#define CRY_SMTP_PORT       "SMTP/Port"
 #define SMTP_AUTH_METH  "SMTP/AuthMethod"
 
 
@@ -55,7 +55,7 @@ private:
     const QString getSMTPHost();
     const QString getSMTPPUsername();
     const QString getSMTPPassword();
-    short getSMTPPort();
+    int getSMTPPort();
     SMTPAuthMethod getSMTPAuthMethod();
 
     void setDataDirectory(const QString directory);
@@ -66,7 +66,7 @@ private:
     void setSMTPHost(const QString host);
     void setSMTPUsername(const QString username);
     void setSMTPPassword(const QString password);
-    void setSMTPPort(const short port);
+    void setSMTPPort(const int port);
     void setSMTPAuthMethod(const SMTPAuthMethod method);
 };
 }

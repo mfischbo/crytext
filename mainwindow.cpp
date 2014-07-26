@@ -4,6 +4,7 @@
 #include "settingsdialog.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "sendstickerdialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -11,6 +12,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 
     this->service = new crytext::CryTextService();
+    this->mailService = new crytext::SMTPService(this->service);
+
     ui->setupUi(this);
     this->setWindowTitle(tr("CryText // New File"));
 
@@ -60,6 +63,12 @@ void MainWindow::on_actionSettings_triggered()
 {
     SettingsDialog* sd = new SettingsDialog(this->service, this);
     sd->show();
+}
+
+void MainWindow::on_actionSticker_Mail_triggered()
+{
+    SendStickerDialog* d = new SendStickerDialog(this->service, this->mailService, this);
+    d->show();
 }
 
 void MainWindow::on_actionNew_triggered()
@@ -157,3 +166,5 @@ void MainWindow::on_actionAbout_triggered()
 {
     ui->plainTextEdit->document()->setPlainText("CryText v0.1 - Icons from http://www.icon8.com/");
 }
+
+

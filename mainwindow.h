@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QListWidgetItem>
 #include "service/crytextservice.h"
+#include "service/smtpservice.h"
 
 namespace Ui {
 class MainWindow;
@@ -42,12 +43,13 @@ private slots:
 
     void on_actionAbout_triggered();
 
+    void on_actionSticker_Mail_triggered();
+
 private:
     Ui::MainWindow *ui;
     crytext::CryTextService *service;
+    crytext::SMTPService    *mailService;
     QString currentFile;
-
-    void runCryptSetup();
 };
 
 #endif // MAINWINDOW_H

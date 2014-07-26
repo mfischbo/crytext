@@ -15,7 +15,7 @@ crytext::Settings::Settings()
     this->smtpHost = m_s->value(SMTP_HOST).toString();
     this->smtpUsername = m_s->value(SMTP_USER).toString();
     this->smtpPassword = m_s->value(SMTP_PASSWORD).toString();
-    this->smtpPort = m_s->value(SMTP_PORT).toInt();
+    this->smtpPort = m_s->value(CRY_SMTP_PORT).toInt();
 
     QString authMeth = m_s->value(SMTP_AUTH_METH, QVariant("-1")).toString();
     if (authMeth == "NO_AUTH") this->authMethod = NO_AUTH;
@@ -107,15 +107,14 @@ crytext::Settings::setSMTPPassword(const QString password) {
     m_s->setValue(SMTP_PASSWORD, QVariant(password));
 }
 
-short
-crytext::Settings::getSMTPPort() {
+int crytext::Settings::getSMTPPort() {
     return this->smtpPort;
 }
 
 void
-crytext::Settings::setSMTPPort(const short port) {
+crytext::Settings::setSMTPPort(const int port) {
     this->smtpPort = port;
-    m_s->setValue(SMTP_PORT, QVariant(port));
+    m_s->setValue(CRY_SMTP_PORT, QVariant(port));
 }
 
 crytext::SMTPAuthMethod

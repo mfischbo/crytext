@@ -5,6 +5,7 @@
 #include <QString>
 #include <QSettings>
 #include <QTextDocument>
+#include <QTextStream>
 
 #include "util/cryptutils.h"
 #include "model/settings.h"
@@ -48,7 +49,13 @@ public:
      * @brief exportPrivateSicker exports the users sticker to a file with the given name
      * @param filename The name where to save the sticker
      */
-    void exportPrivateSicker(QString &filename);
+    void exportPrivateSticker(QString &filename);
+
+    /**
+     * @brief exportPrivateSticker writes the sticker to the given stream
+     * @param stream The stream to write the sticker to
+     */
+    void exportPrivateSticker(QTextStream &stream);
 
     /**
      * @brief importSticker Imports a crytext sticker from the given location

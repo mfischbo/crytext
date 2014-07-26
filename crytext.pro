@@ -19,7 +19,9 @@ SOURCES += main.cpp\
     util/cryptutils.cpp \
     model/crytextfile.cpp \
     model/sticker.cpp \
-    model/settings.cpp
+    model/settings.cpp \
+    service/smtpservice.cpp \
+    sendstickerdialog.cpp
 
 HEADERS  += mainwindow.h \
     settingsdialog.h \
@@ -27,7 +29,9 @@ HEADERS  += mainwindow.h \
     util/cryptutils.h \
     model/crytextfile.h \
     model/sticker.h \
-    model/settings.h
+    model/settings.h \
+    service/smtpservice.h \
+    sendstickerdialog.h
 
 TRANSLATIONS = crytext_en.ts \
 	crytext_de.ts
@@ -36,7 +40,8 @@ CODECFORTR	=	UTF-8
 CODECFORSRC	=	UTF-8
 
 FORMS    += mainwindow.ui \
-    settings.ui
+    settings.ui \
+    sendstickerdialog.ui
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/ -lcrypto++
 
@@ -56,3 +61,8 @@ OTHER_FILES += \
 #DEPENDPATH += $$PWD/
 
 #unix:!macx: PRE_TARGETDEPS += $$PWD/lib/libcryptopp.a
+
+unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/ -lPocoNet
+
+INCLUDEPATH += $$PWD/../../../../../usr/include
+DEPENDPATH += $$PWD/../../../../../usr/include

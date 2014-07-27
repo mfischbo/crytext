@@ -6,13 +6,11 @@
 #include <QStringList>
 #include <QRegExp>
 
-#include <crypto++/asn.h>
 #include <crypto++/rsa.h>
 #include <crypto++/aes.h>
 #include <crypto++/modes.h>
 #include <crypto++/filters.h>
 
-#include <crypto++/rsa.h>
 #include <crypto++/osrng.h>
 #include <crypto++/base64.h>
 #include <crypto++/hex.h>
@@ -41,9 +39,9 @@ CryptUtils::CryptUtils()
 
 bool CryptUtils::generateRSAKeyPair(const QString &dirname) {
 
-    AutoSeededRandomPool rnd;
+    AutoSeededRandomPool rng;
     CryptoPP::RSA::PrivateKey key;
-    key.GenerateRandomWithKeySize(rnd, 3072);
+    key.GenerateRandomWithKeySize(rng, 3072);
 
     // save the private key file
     QString filename = QString(dirname).append("/rsa-private.key");
@@ -97,12 +95,12 @@ bool CryptUtils::readKeyPairFrom(const QString &dirname) {
     q2.MessageEnd();
     this->publicKey.Load(q2);
 
-    AutoSeededRandomPool rnd;
-    if (!this->privateKey.Validate(rnd, 3)) {
+    AutoSeededRandomPool rng;
+    if (!this->privateKey.Validate(rng, 3)) {
         qDebug() << "Failed to validate private key";
         return false;
     }
-    if (!this->publicKey.Validate(rnd, 3)) {
+    if (!this->publicKey.Validate(rng, 3)) {
         qDebug() << "Failed to validate public key";
         return false;
     }
@@ -154,6 +152,43 @@ CryptUtils::aesDecrypt(const byte* key, const byte* iv, QString ciphertext) cons
     stfDecryptor.Put( reinterpret_cast<const unsigned char*>(ciphertext.toStdString().c_str()), ciphertext.length());
     stfDecryptor.MessageEnd();
     return QString::fromStdString(stdPlain);
+}
+
+QString
+CryptUtils::rsaEncrypt(const byte *plaintext, int length, CryptoPP::RSA::PublicKey* key) const {
+
+    AutoSeededRandomPool rng;
+    std::string retval;
+    CryptoPP::RSAES_OAEP_SHA_Encryptor enc(*key);
+    CryptoPP::StringSource(plaintext, length, true,
+                           new CryptoPP::PK_EncryptorFilter(rng, enc,
+                             new CryptoPP::StringSink(retval)));
+    return QString::fromStdString(retval);
+}
+
+
+QString
+CryptUtils::rsaDecrypt(const byte* ciphertext, int length, CryptoPP::RSA::PrivateKey* key) const {
+
+    AutoSeededRandomPool rng;
+    std::string retval;
+    CryptoPP::RSAES_OAEP_SHA_Decryptor dec(*key);
+    CryptoPP::StringSource(ciphertext, length, true,
+          new CryptoPP::PK_DecryptorFilter(rng, dec,
+            new CryptoPP::StringSink(retval)));
+    return QString::fromStdString(retval);
+}
+
+void
+CryptUtils::generateRandomAESKey(byte* ptr) const {
+    AutoSeededRandomPool rng;
+    rng.GenerateBlock(ptr, CryptoPP::AES::DEFAULT_KEYLENGTH);
+}
+
+void
+CryptUtils::generateRandomAES_IV(byte *ptr) const {
+    AutoSeededRandomPool rng;
+    rng.GenerateBlock(ptr, CryptoPP::AES::BLOCKSIZE);
 }
 
 void

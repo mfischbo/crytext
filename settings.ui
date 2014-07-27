@@ -229,6 +229,11 @@
   <tabstop>le_LastName</tabstop>
   <tabstop>le_EMail</tabstop>
   <tabstop>btn_ExSticker</tabstop>
+  <tabstop>le_SmtpHost</tabstop>
+  <tabstop>sb_SmtpPort</tabstop>
+  <tabstop>le_SmtpUser</tabstop>
+  <tabstop>le_SmtpPass</tabstop>
+  <tabstop>cb_SmtpAuthMethod</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources/>

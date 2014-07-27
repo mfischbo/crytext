@@ -146,8 +146,12 @@ void MainWindow::on_pushButton_2_clicked()
 void MainWindow::on_btn_RemoveSticker_clicked()
 {
     QListWidgetItem *item = ui->stickerList->currentItem();
-    service->removeStickerByEmail(item->data(0).toString());
-    delete item;
+    QString txt = item->text();
+    QStringList sl = txt.split(QRegExp("\n"));
+    if (sl.length() == 2) {
+        service->removeStickerByEmail(sl[1]);
+        delete item;
+    }
 }
 
 void MainWindow::on_stickerList_itemDoubleClicked(QListWidgetItem *item)
@@ -157,7 +161,7 @@ void MainWindow::on_stickerList_itemDoubleClicked(QListWidgetItem *item)
     QStringList sl = txt.split(QRegExp("\n"));
     if (sl.length() == 2) {
 
-        QString email = sl.at(1);
+        QString email = sl[1];
 
         crytext::Sticker *s = service->getStickerByEmail(email);
         service->addRecipient(s);

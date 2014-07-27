@@ -11,6 +11,7 @@
 #include <crypto++/osrng.h>
 #include <crypto++/files.h>
 #include <crypto++/hex.h>
+#include <crypto++/crc.h>
 
 using namespace crytext;
 
@@ -44,11 +45,11 @@ CryTextFile::CryTextFile(QTextStream &inStream, const CryptUtils *utils, QString
         qDebug() << "Something went wrong";
     }
 
-    this->utils->fromHex(tokens[0].toStdString(), this->aesKeyCipher);
-    this->utils->fromHex(tokens[1].toStdString(), this->aesIVCipher);
+    this->utils->fromBase64(tokens[0].toStdString(), this->aesKeyCipher);
+    this->utils->fromBase64(tokens[1].toStdString(), this->aesIVCipher);
 
     std::string ctxt;
-    this->utils->fromHex(tokens[2].toStdString(), ctxt);
+    this->utils->fromBase64(tokens[2].toStdString(), ctxt);
     this->ciphertext = QString::fromStdString(ctxt);
 }
 
@@ -86,6 +87,12 @@ CryTextFile::encrypt(CryptoPP::RSA::PublicKey *publicKey) {
                            new CryptoPP::PK_EncryptorFilter(rng, enc,
                               new CryptoPP::StringSink(aesIVCipher)));
 
+    // calculate crc32 checksum on both
+    CryptoPP::CRC32 crc;
+    byte digest[CryptoPP::CRC32::DIGESTSIZE];
+    crc.CalculateDigest(digest, (const byte*) this->aesKeyCipher.data(), this->aesKeyCipher.length());
+    qDebug() << "Checksum for ciphered key is " << *((u_int32_t*) digest);
+
     if (this->aesKeyCipher.length() == 0)
         qDebug() << "Failed to encypt AES key";
     if (this->aesIVCipher.length() == 0)
@@ -113,6 +120,11 @@ CryTextFile::decrypt(CryptoPP::RSA::PrivateKey *privateKey) {
           new CryptoPP::PK_DecryptorFilter(rng, dec,
              new CryptoPP::StringSink(ivString)));
 
+    CryptoPP::CRC32 crc;
+    byte digest[CryptoPP::CRC32::DIGESTSIZE];
+    crc.CalculateDigest(digest, (const byte*) this->aesKeyCipher.data(), this->aesKeyCipher.length());
+    qDebug() << "Decrypt CRC cipherd key is " << *((u_int32_t*) digest);
+
     memcpy(this->aesKey, keyString.c_str(), CryptoPP::AES::DEFAULT_KEYLENGTH);
     memcpy(this->iv, ivString.c_str(), CryptoPP::AES::BLOCKSIZE);
 
@@ -126,22 +138,22 @@ CryTextFile::saveTo(QTextStream &stream) {
 
     // write the encrypted aes key
     std::string b64KeyCipher;
-    this->utils->toHex(aesKeyCipher, b64KeyCipher);
+    this->utils->toBase64(aesKeyCipher, b64KeyCipher);
     stream << QString::fromStdString(b64KeyCipher);
     stream << "\n\n";
 
     // write the encrypted AES IV
     std::string b64IVCipher;
-    this->utils->toHex(aesIVCipher, b64IVCipher);
+    this->utils->toBase64(aesIVCipher, b64IVCipher);
     stream << QString::fromStdString(b64IVCipher);
     stream << "\n\n";
 
     // write the actual payload
     std::string b64Payload;
     std::string cypher = this->ciphertext.toStdString();
-    this->utils->toHex(cypher, b64Payload);
+    this->utils->toBase64(cypher, b64Payload);
     stream << QString::fromStdString(b64Payload);
-    stream << "\n";
+    //stream << "\n";
     return true;
 }
 

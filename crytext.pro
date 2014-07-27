@@ -55,7 +55,8 @@ RESOURCES += \
     resources.qrc
 
 OTHER_FILES += \
-    lib/libcryptopp.a
+    lib/libcryptopp.a \
+    COPYING.txt
 
 # use this for static library
 #unix:!macx: LIBS += -L$$PWD/lib/ -lcryptopp

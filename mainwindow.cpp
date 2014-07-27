@@ -5,6 +5,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "sendstickerdialog.h"
+#include "emaildialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -194,5 +195,9 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::on_actionSend_Mail_triggered()
 {
+    EmailDialog* ed = new EmailDialog(this->service, this);
+    ed->show();
+    /*
     service->sendAsEMail("Test", "This is radio active", ui->plainTextEdit->document());
+    */
 }

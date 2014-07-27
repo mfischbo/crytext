@@ -47,10 +47,10 @@ CryTextService::CryTextService()
     // check if a data directory is set and a rsa key pair exists
     if (this->settings->getDataDirectory().length() > 0) {
 
-        bool containsKeys = this->utils->readKeyPairFrom(settings->getDataDirectory());
+        bool containsKeys = this->utils->readKeyPairFrom(settings->getDataDirectory(), this->privateKey, this->publicKey);
         if (!containsKeys) {
             this->utils->generateRSAKeyPair(settings->getDataDirectory());
-            this->utils->readKeyPairFrom(settings->getDataDirectory());
+            this->utils->readKeyPairFrom(settings->getDataDirectory(), this->privateKey, this->publicKey);
         }
 
         // read all stickers
@@ -66,6 +66,7 @@ CryTextService::CryTextService()
             if (!fName.endsWith("/"))
                 fName.append("/");
             fName.append(it.next());
+            qDebug() << "Trying to import sticker " << fName;
             Sticker *s = new Sticker(fName, this->utils);
             stickers << s;
         }
@@ -75,13 +76,15 @@ CryTextService::CryTextService()
 CryTextService::~CryTextService() {
     delete settings;
     delete utils;
+
     for (int i=0; i < stickers.length(); i++) {
         Sticker *s = stickers.at(i);
         s->~Sticker();
     }
 }
 
-QTextDocument* CryTextService::open(const QString &filename) {
+QTextDocument*
+CryTextService::open(const QString &filename) {
     QFile file(filename);
     if (!file.open(QFile::ReadOnly)) return 0;
 
@@ -102,7 +105,7 @@ QTextDocument* CryTextService::open(const QString &filename) {
         CryTextFile ctf(inStream, this->utils,
                         settings->getStickerEMail());
 
-        ctf.decrypt(this->utils->getRSAPrivateKey());
+        ctf.decrypt(&privateKey);
         QString plaintext = ctf.getPlainText();
 
         QTextDocument *retval = new QTextDocument();
@@ -119,7 +122,7 @@ CryTextService::saveAs(const QString &filename, const QTextDocument* document) {
 
     // always create an entry for the author!
     CryTextFile ctf(document, this->utils);
-    ctf.encrypt(this->utils->getRSAPublicKey());
+    ctf.encrypt(&publicKey);
 
     QFile f(filename);
     if (!f.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -187,12 +190,12 @@ CryTextService::exportPrivateSticker(QTextStream &stream) {
     stream << settings->getStickerLastName() << "\n";
 
     QString key;
-    this->utils->publicKeyAsHex(key);
+    this->utils->publicKeyAsHex(key, this->publicKey);
     stream << key;
     stream.flush();
 }
 
-Sticker *
+Sticker*
 CryTextService::importSticker(QString &filename) {
 
     // create a new sticker and add it to the list of stickers

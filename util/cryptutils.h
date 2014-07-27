@@ -31,9 +31,7 @@ namespace crytext {
 
 class CryptUtils
 {
-private :
-    CryptoPP::RSA::PublicKey    publicKey;
-    CryptoPP::RSA::PrivateKey   privateKey;
+private:
 
 public:
     CryptUtils();
@@ -43,7 +41,7 @@ public:
      * @param dirname The name of the directory to read from
      * @return True, if the keys could be read, false otherwise
      */
-    bool readKeyPairFrom(const QString &dirname);
+    bool readKeyPairFrom(const QString &dirname, CryptoPP::RSA::PrivateKey &privateKey, CryptoPP::RSA::PublicKey &publicKey);
 
     /**
      * @brief generateRSAKeyPair Generates a new RSA keypair for the user and stores it
@@ -145,15 +143,15 @@ public:
      * @brief publicKeyAsHex Exports the public key this class holds as hex string
      * @param target Reference where to write the hex string
      */
-    void publicKeyAsHex(QString &target) const;
+    void publicKeyAsHex(QString &target, CryptoPP::RSA::PublicKey &key) const;
 
     /**
      * @brief readPublicKeyFromHex Reads a hex encoded string and tries to generate a RSA key from it
-     * @param base64 The hex string to be read
-     * @param pk Reference to the public key that will be setup
-     * @return True on success, false otherwise
+     * @param hex The hexadecimal encoded public key
+     * @param pk Reference to the public key that will be loaded
+     * @return True if the key is valid, false otherwise
      */
-    bool readPublicKeyFromHex(QString &base64, CryptoPP::RSA::PublicKey &pk) const;
+    bool loadPublicKey(std::string &hex, CryptoPP::RSA::PublicKey &pk) const;
 };
 }
 #endif // CRYTPUTILS_H

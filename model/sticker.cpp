@@ -37,10 +37,12 @@ Sticker::Sticker(QString &filename, const CryptUtils *utils)
     this->firstName = inStream.readLine();
     this->lastName = inStream.readLine();
     QString pubK = inStream.readLine();
+    std::string hex = pubK.toStdString();
     f.close();
 
-    publicKey = CryptoPP::RSA::PublicKey();
-    bool valid = utils->readPublicKeyFromHex(pubK, publicKey);
+    qDebug() << "Public Key Hex as length : " << pubK.length();
+
+    bool valid = utils->loadPublicKey(hex, publicKey);
     if (!valid) {
         qDebug() << "Public key seems not to be valid";
     } else

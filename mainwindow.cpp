@@ -18,6 +18,7 @@ This file is part of crytext.
 */
 
 #include <QFileDialog>
+#include <QFont>
 #include <QTextDocument>
 #include <QDebug>
 #include "settingsdialog.h"
@@ -31,14 +32,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
 
-    this->service = new crytext::CryTextService();
-
     ui->setupUi(this);
     this->setWindowTitle(tr("CryText // New File"));
 
+
+    this->service = new crytext::CryTextService();
+
     // adjust tab stop width.. who in the world uses 8 spaces for tabs??
     ui->plainTextEdit->setTabStopWidth(4);
-    ui->plainTextEdit->setFont(QFont("Bitstream Vera Sans Mono", 10));
+    ui->plainTextEdit->setFont(this->getDefaultFont());
 
     // build the list of stickers
     QListIterator<crytext::Sticker*> it(*this->service->getAvailableStickers());
@@ -53,9 +55,6 @@ MainWindow::MainWindow(QWidget *parent) :
         txt.append("\n").append(*s->getEMail());
 
         QListWidgetItem *item = new QListWidgetItem(QIcon(":/images/images/crypted-32.png"), txt, ui->stickerList);
-
-
-        //item->setData(2, QVariant(*s->getEMail()));
         ui->stickerList->addItem(item);
     }
 }
@@ -74,11 +73,12 @@ void MainWindow::on_actionOpen_triggered()
 
     if (filename.length() > 0) {
         QTextDocument* doc = service->open(filename);
+        doc->setDefaultFont(this->getDefaultFont());
         QPlainTextDocumentLayout *layout = new QPlainTextDocumentLayout(doc);
         doc->setDocumentLayout(layout);
         ui->plainTextEdit->setDocument(doc);
         ui->plainTextEdit->setTabStopWidth(4);
-        ui->plainTextEdit->setFont(QFont("Bitstream Vera Sans Mono", 10));
+        ui->plainTextEdit->setFont(this->getDefaultFont());
         this->setWindowTitle(filename);
         this->currentFile = filename;
     }
@@ -101,7 +101,10 @@ void MainWindow::on_actionNew_triggered()
     QTextDocument *doc = new QTextDocument(this);
     QPlainTextDocumentLayout *layout = new QPlainTextDocumentLayout(doc);
     doc->setDocumentLayout(layout);
+    doc->setDefaultFont(this->getDefaultFont());
     ui->plainTextEdit->setDocument(doc);
+    ui->plainTextEdit->setTabStopWidth(4);
+    ui->plainTextEdit->setFont(this->getDefaultFont());
     this->setWindowTitle("CryText // New File");
 
 }
@@ -219,4 +222,9 @@ void MainWindow::on_actionSend_Mail_triggered()
     /*
     service->sendAsEMail("Test", "This is radio active", ui->plainTextEdit->document());
     */
+}
+
+const QFont
+MainWindow::getDefaultFont() {
+    return QFont("Bitstream Vera Sans Mono", 10);
 }

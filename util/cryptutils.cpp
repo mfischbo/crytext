@@ -85,7 +85,9 @@ bool CryptUtils::generateRSAKeyPair(const QString &dirname) {
     return true;
 }
 
-bool CryptUtils::readKeyPairFrom(const QString &dirname) {
+bool
+CryptUtils::readKeyPairFrom(const QString &dirname, CryptoPP::RSA::PrivateKey &privateKey,
+                            CryptoPP::RSA::PublicKey &publicKey) {
 
     qDebug() << "Reading keypair from " << dirname;
 
@@ -100,7 +102,7 @@ bool CryptUtils::readKeyPairFrom(const QString &dirname) {
     ByteQueue queue;
     fs1.TransferTo(queue);
     queue.MessageEnd();
-    this->privateKey.Load(queue);
+    privateKey.Load(queue);
 
     QString pubFilename = QString(dirname).append("/rsa-public.key");
     QFile f2(pubFilename);
@@ -112,29 +114,20 @@ bool CryptUtils::readKeyPairFrom(const QString &dirname) {
     ByteQueue q2;
     fs2.TransferTo(q2);
     q2.MessageEnd();
-    this->publicKey.Load(q2);
+    publicKey.Load(q2);
 
     AutoSeededRandomPool rng;
-    if (!this->privateKey.Validate(rng, 3)) {
+    if (!privateKey.Validate(rng, 3)) {
         qDebug() << "Failed to validate private key";
         return false;
     }
-    if (!this->publicKey.Validate(rng, 3)) {
+    if (!publicKey.Validate(rng, 3)) {
         qDebug() << "Failed to validate public key";
         return false;
     }
     return true;
 }
 
-CryptoPP::RSA::PublicKey*
-CryptUtils::getRSAPublicKey() {
-    return &publicKey;
-}
-
-CryptoPP::RSA::PrivateKey*
-CryptUtils::getRSAPrivateKey() {
-    return &privateKey;
-}
 
 QString
 CryptUtils::aesEncrypt(const byte* key, const byte* iv, QString plaintext) const {
@@ -211,26 +204,25 @@ CryptUtils::generateRandomAES_IV(byte *ptr) const {
 }
 
 void
-CryptUtils::publicKeyAsHex(QString &target) const {
+CryptUtils::publicKeyAsHex(QString &target, CryptoPP::RSA::PublicKey &key) const {
     HexEncoder enc;
     ByteQueue q;
 
     std::string sink;
     enc.Attach(new StringSink(sink));
 
-    this->publicKey.Save(q);
+    key.Save(q);
     q.CopyTo(enc);
     enc.MessageEnd();
-
     target.append(QString::fromStdString(sink));
 }
 
 bool
-CryptUtils::readPublicKeyFromHex(QString &base64, CryptoPP::RSA::PublicKey &pk) const {
-    const byte *p = (unsigned char*) base64.toStdString().c_str();
+CryptUtils::loadPublicKey(std::string &hex, CryptoPP::RSA::PublicKey &pk) const {
+    const byte *p = (unsigned char*) hex.data();
 
     HexDecoder dec;
-    dec.Put(p, base64.toStdString().length());
+    dec.Put(p, hex.length());
     dec.MessageEnd();
 
     pk.Load(dec);

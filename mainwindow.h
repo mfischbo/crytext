@@ -22,6 +22,8 @@ This file is part of crytext.
 
 #include <QMainWindow>
 #include <QListWidgetItem>
+#include <QPlainTextDocumentLayout>
+#include <QFont>
 #include "service/crytextservice.h"
 #include "service/smtpservice.h"
 
@@ -70,6 +72,10 @@ private:
     Ui::MainWindow *ui;
     crytext::CryTextService *service;
     QString currentFile;
+
+    const QFont getDefaultFont();
 };
+
+
 
 #endif // MAINWINDOW_H

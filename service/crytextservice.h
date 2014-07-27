@@ -40,6 +40,9 @@ private:
     QList<Sticker*>      stickers;
     QList<Sticker*>      recipients;
 
+    CryptoPP::RSA::PrivateKey   privateKey;
+    CryptoPP::RSA::PublicKey    publicKey;
+
     /**
      * @brief setRecentDir Internally stores the directory currently used by the user
      * @param filename The filename the user opened

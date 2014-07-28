@@ -17,18 +17,43 @@ This file is part of crytext.
  along with crytext.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <QComboBox>
+#include <QHBoxLayout>
+#include <QPushButton>
 #include "emaildialog.h"
 #include "ui_emaildialog.h"
+#include "model/sticker.h"
 
 using crytext::CryTextService;
+using crytext::Sticker;
 
-EmailDialog::EmailDialog(CryTextService* service, QWidget *parent) :
+EmailDialog::EmailDialog(CryTextService* service, const QTextDocument *doc, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::EmailDialog)
 {
     ui->setupUi(this);
     this->service = service;
     this->parent = parent;
+    this->document = doc;
+
+    QListIterator<Sticker*>* it = service->getRecipients();
+    while (it->hasNext()) {
+        Sticker *s = it->next();
+
+        QHBoxLayout *l = new QHBoxLayout();
+        l->addWidget(this->createRecipientTypeComboBox(parent));
+
+        QLineEdit* recp = new QLineEdit(parent);
+        recp->setText(*s->getEMail());
+        l->addWidget(recp);
+
+        QPushButton* btn = new QPushButton(parent);
+        btn->setText("+");
+        l->addWidget(btn);
+
+        ui->rcpt_Layout->addLayout(l);
+
+    }
 }
 
 EmailDialog::~EmailDialog()
@@ -46,5 +71,14 @@ void EmailDialog::on_buttonBox_accepted()
 {
     QString subject = ui->le_Subject->text();
     QString message = ui->pte_Message->document()->toPlainText();
+    service->sendAsEMail(subject, message, this->document);
+}
 
+QWidget*
+EmailDialog::createRecipientTypeComboBox(QWidget *parent) {
+    QComboBox* b = new QComboBox(parent);
+    b->addItem("To:");
+    b->addItem("CC:");
+    b->addItem("BCC:");
+    return b;
 }

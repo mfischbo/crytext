@@ -217,7 +217,7 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::on_actionSend_Mail_triggered()
 {
-    EmailDialog* ed = new EmailDialog(this->service, this);
+    EmailDialog* ed = new EmailDialog(this->service, ui->plainTextEdit->document(), this);
     ed->show();
     /*
     service->sendAsEMail("Test", "This is radio active", ui->plainTextEdit->document());

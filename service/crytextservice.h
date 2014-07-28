@@ -115,6 +115,8 @@ public:
      */
     void addRecipient(Sticker *s);
 
+    QListIterator<Sticker*>* getRecipients();
+
     /**
      * @brief getSettings Returns a pointer on the QSettings for direct access
      * @return The QSettings

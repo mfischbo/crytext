@@ -20,8 +20,10 @@ This file is part of crytext.
 #ifndef EMAILDIALOG_H
 #define EMAILDIALOG_H
 
+#include <QWidget>
 #include <QDialog>
 #include <QList>
+#include <QTextDocument>
 #include <service/crytextservice.h>
 
 using crytext::CryTextService;
@@ -35,7 +37,7 @@ class EmailDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit EmailDialog(CryTextService *service, QWidget *parent = 0);
+    explicit EmailDialog(CryTextService *service, const QTextDocument *doc, QWidget *parent = 0);
     ~EmailDialog();
 
 private slots:
@@ -49,6 +51,9 @@ private:
     QWidget* parent;
     Ui::EmailDialog *ui;
     CryTextService* service;
+    const QTextDocument *document;
+
+    QWidget* createRecipientTypeComboBox(QWidget *parent);
 };
 
 #endif // EMAILDIALOG_H

@@ -16,7 +16,17 @@ StickerLabel::StickerLabel(Sticker* sticker, QWidget *parent) :
     ui->label->setToolTip(QString(*sticker->getEMail()));
 }
 
+QString
+StickerLabel::text() {
+    return ui->label->text();
+}
+
 StickerLabel::~StickerLabel()
 {
     delete ui;
+}
+
+void StickerLabel::on_toolButton_clicked()
+{
+    emit deleteIconClicked(this);
 }

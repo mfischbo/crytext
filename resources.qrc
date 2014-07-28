@@ -15,5 +15,10 @@
         <file>images/crypted-20.png</file>
         <file>images/crypted-32.png</file>
         <file>images/message-32.png</file>
+        <file>images/delete_sign-20.png</file>
+        <file>images/delete_sign-red-20.png</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>styles/style.css</file>
     </qresource>
 </RCC>

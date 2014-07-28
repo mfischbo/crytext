@@ -70,6 +70,8 @@ private slots:
 
     void on_plainTextEdit_textChanged();
 
+    void onStickerRemoveClicked(QWidget*);
+
 private:
     Ui::MainWindow *ui;
     crytext::CryTextService *service;

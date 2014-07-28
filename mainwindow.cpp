@@ -32,7 +32,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-
     ui->setupUi(this);
     this->setWindowTitle(tr("CryText // New File"));
 
@@ -191,8 +190,15 @@ void MainWindow::on_stickerList_itemDoubleClicked(QListWidgetItem *item)
         service->addRecipient(s);
 
         StickerLabel* l = new StickerLabel(s, this);
+        connect(l, SIGNAL(deleteIconClicked(QWidget*)), this, SLOT(onStickerRemoveClicked(QWidget*)));
         ui->Recipients->layout()->addWidget(l);
     }
+}
+
+void MainWindow::onStickerRemoveClicked(QWidget* label) {
+    ui->Recipients->layout()->removeWidget(label);
+    delete label;
+
 }
 
 void MainWindow::on_actionSave_triggered()

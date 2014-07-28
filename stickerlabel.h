@@ -16,7 +16,14 @@ class StickerLabel : public QWidget
 
 public:
     explicit StickerLabel(Sticker *sticker, QWidget *parent = 0);
+    QString text();
     ~StickerLabel();
+
+signals:
+    void deleteIconClicked(QWidget*);
+
+private slots:
+    void on_toolButton_clicked();
 
 private:
     Ui::StickerLabel *ui;

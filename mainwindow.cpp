@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     this->setWindowTitle(tr("CryText // New File"));
-
+    this->setWindowIcon(QIcon(":/images/images/crypted.png"));
 
     this->service = new crytext::CryTextService();
 

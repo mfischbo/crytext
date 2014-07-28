@@ -13,4 +13,15 @@ The sofware is written in using tht QT Framework and currently in a very early s
 - libpoco >= 1.3.6
 
 
+## Build from sources
+I'm planning to build packages for Linux (Ubuntu), Windows and Mac and provide them here. As logn as those packages do not exist you can build from sources using qt-creator. 
+
+### Ubuntu 14.04 (Trusty Thar)
+
+```
+  sudo apt-get install qtcreator libpoco-dev libcrypto++-dev
+```
+Then checkout the sources from here and add the project in qt creator.
+
+
 More infos comming soon, as I finish the alpha release

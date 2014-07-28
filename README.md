@@ -5,6 +5,15 @@ Crytext is a small and simple text editor that automagically encrypts your text 
 
 To keep away the hassle to deal with the security details crytext introduces a concept of "stickers" or maby better pictured as address labels. Each user using crytext has it's own private sticker that he can exchange with others. If Alice wants to send Bob a crytext file, she would only need to attach bob's sticker to the file, so he could open in.
 
+## Features
+* simplicity
+* full encryption of your text files
+* stickers allow you to share files with your friends
+* sending textfiles and stickers with the built in e-mail client
+
+Here's a screenshot of the (nearly) finished user interface
+![ScreenShot](http://fischboeck.net/crytext/crytext-screener.png)
+
 ## Technology & Dependencies
 The sofware is written in using tht QT Framework and currently in a very early stage.
 
@@ -25,3 +34,5 @@ Then checkout the sources from here and add the project in qt creator.
 
 
 More infos comming soon, as I finish the alpha release
+
+

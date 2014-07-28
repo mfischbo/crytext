@@ -50,7 +50,7 @@
       <item>
        <widget class="QWidget" name="Recipients" native="true">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>2</verstretch>
          </sizepolicy>
@@ -61,9 +61,42 @@
           <height>32</height>
          </size>
         </property>
+        <property name="acceptDrops">
+         <bool>true</bool>
+        </property>
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
          <item>
           <widget class="QLabel" name="label">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>180</width>
+             <height>16777215</height>
+            </size>
+           </property>
            <property name="toolTip">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Drop the stickers of the contacts here, that should be able to read the file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
@@ -115,7 +148,7 @@
           <item>
            <widget class="QListWidget" name="stickerList">
             <property name="dragEnabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="iconSize">
              <size>
@@ -274,11 +307,6 @@
     <bool>false</bool>
    </property>
   </action>
-  <action name="actionStickers">
-   <property name="text">
-    <string>Stickers...</string>
-   </property>
-  </action>
   <action name="actionAbout">
    <property name="icon">
     <iconset resource="resources.qrc">
@@ -314,5 +342,25 @@
  <resources>
   <include location="resources.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>plainTextEdit</sender>
+   <signal>selectionChanged()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>on_TextEditChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>450</x>
+     <y>298</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>834</x>
+     <y>72</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>on_TextEditChanged()</slot>
+ </slots>
 </ui>

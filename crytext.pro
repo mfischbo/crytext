@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     model/settings.cpp \
     service/smtpservice.cpp \
     sendstickerdialog.cpp \
-    emaildialog.cpp
+    emaildialog.cpp \
+    stickerlabel.cpp
 
 HEADERS  += mainwindow.h \
     settingsdialog.h \
@@ -33,7 +34,8 @@ HEADERS  += mainwindow.h \
     model/settings.h \
     service/smtpservice.h \
     sendstickerdialog.h \
-    emaildialog.h
+    emaildialog.h \
+    stickerlabel.h
 
 TRANSLATIONS = crytext_en.ts \
 	crytext_de.ts
@@ -44,7 +46,8 @@ CODECFORSRC	=	UTF-8
 FORMS    += mainwindow.ui \
     settings.ui \
     sendstickerdialog.ui \
-    emaildialog.ui
+    emaildialog.ui \
+    stickerlabel.ui
 
 unix:!macx: LIBS += -L$$PWD/../../../../../usr/lib/ -lcrypto++
 

@@ -26,6 +26,7 @@ This file is part of crytext.
 #include "ui_mainwindow.h"
 #include "sendstickerdialog.h"
 #include "emaildialog.h"
+#include "stickerlabel.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -123,7 +124,7 @@ void MainWindow::on_actionSave_as_triggered()
         qDebug() << "Saving editor contents to " << filename;
         service->saveAs(filename, ui->plainTextEdit->document());
         this->currentFile = filename;
-        this->setWindowTitle(filename);
+        this->setWindowTitle(filename.left(1));
     }
 }
 
@@ -189,8 +190,7 @@ void MainWindow::on_stickerList_itemDoubleClicked(QListWidgetItem *item)
         crytext::Sticker *s = service->getStickerByEmail(email);
         service->addRecipient(s);
 
-        QLabel *l = new QLabel(ui->Recipients);
-        l->setText(*s->getEMail());
+        StickerLabel* l = new StickerLabel(s, this);
         ui->Recipients->layout()->addWidget(l);
     }
 }
@@ -199,8 +199,10 @@ void MainWindow::on_actionSave_triggered()
 {
     if (this->currentFile.length() == 0)
         return this->on_actionSave_as_triggered();
-    else
+    else {
         service->saveAs(this->currentFile, ui->plainTextEdit->document());
+        this->setWindowTitle(this->currentFile);
+    }
 }
 
 void MainWindow::on_stickerList_itemClicked(QListWidgetItem *item)
@@ -227,4 +229,12 @@ void MainWindow::on_actionSend_Mail_triggered()
 const QFont
 MainWindow::getDefaultFont() {
     return QFont("Bitstream Vera Sans Mono", 10);
+}
+
+void MainWindow::on_plainTextEdit_textChanged()
+{
+    if (!this->windowTitle().endsWith("*")) {
+        QString t = this->windowTitle().append("*");
+        this->setWindowTitle(t);
+    }
 }

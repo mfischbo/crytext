@@ -68,6 +68,8 @@ private slots:
 
     void on_actionSend_Mail_triggered();
 
+    void on_plainTextEdit_textChanged();
+
 private:
     Ui::MainWindow *ui;
     crytext::CryTextService *service;

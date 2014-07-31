@@ -197,8 +197,10 @@ void MainWindow::on_stickerList_itemDoubleClicked(QListWidgetItem *item)
 
 void MainWindow::onStickerRemoveClicked(QWidget* label) {
     ui->Recipients->layout()->removeWidget(label);
+    StickerLabel* l = (StickerLabel*) label;
+    Sticker* s = l->getSticker();
+    service->removeRecipient(s);
     delete label;
-
 }
 
 void MainWindow::on_actionSave_triggered()

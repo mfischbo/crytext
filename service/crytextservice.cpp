@@ -258,6 +258,11 @@ CryTextService::addRecipient(Sticker *s) {
     this->recipients.append(s);
 }
 
+void
+CryTextService::removeRecipient(Sticker *s) {
+    this->recipients.removeOne(s);
+}
+
 QListIterator<Sticker*>*
 CryTextService::getRecipients() {
     return new QListIterator<Sticker*>(this->recipients);

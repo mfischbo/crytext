@@ -14,11 +14,18 @@ StickerLabel::StickerLabel(Sticker* sticker, QWidget *parent) :
     QString label = QString(*sticker->getFirstName()).append(" ").append(*sticker->getLastName());
     ui->label->setText(label);
     ui->label->setToolTip(QString(*sticker->getEMail()));
+
+    this->sticker = sticker;
 }
 
 QString
 StickerLabel::text() {
     return ui->label->text();
+}
+
+Sticker*
+StickerLabel::getSticker() {
+    return this->sticker;
 }
 
 StickerLabel::~StickerLabel()

@@ -16,6 +16,7 @@ class StickerLabel : public QWidget
 
 public:
     explicit StickerLabel(Sticker *sticker, QWidget *parent = 0);
+    Sticker* getSticker();
     QString text();
     ~StickerLabel();
 
@@ -27,6 +28,7 @@ private slots:
 
 private:
     Ui::StickerLabel *ui;
+    Sticker *sticker;
 };
 
 #endif // STICKERLABEL_H

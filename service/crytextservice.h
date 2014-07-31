@@ -115,6 +115,12 @@ public:
      */
     void addRecipient(Sticker *s);
 
+    /**
+     * @brief removeRecipient Removes the recipient for the given sticker
+     * @param s The sticker to be removed from the recipients list
+     */
+    void removeRecipient(Sticker *s);
+
     QListIterator<Sticker*>* getRecipients();
 
     /**

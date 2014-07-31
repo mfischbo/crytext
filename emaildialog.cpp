@@ -18,6 +18,7 @@ This file is part of crytext.
 */
 
 #include <QComboBox>
+#include <QDebug>
 #include <QHBoxLayout>
 #include <QPushButton>
 #include "emaildialog.h"
@@ -35,26 +36,41 @@ EmailDialog::EmailDialog(CryTextService* service, const QTextDocument *doc, QWid
     this->service = service;
     this->parent = parent;
     this->document = doc;
+    this->mapper = new QSignalMapper();
 
     QListIterator<Sticker*>* it = service->getRecipients();
-    while (it->hasNext()) {
+    for (int i=0; it->hasNext(); i++) {
         Sticker *s = it->next();
-
-        QHBoxLayout *l = new QHBoxLayout();
-        l->addWidget(this->createRecipientTypeComboBox(parent));
-
-        QLineEdit* recp = new QLineEdit(parent);
-        recp->setText(*s->getEMail());
-        l->addWidget(recp);
-
-        QPushButton* btn = new QPushButton(parent);
-        btn->setText("+");
-        l->addWidget(btn);
-
-        ui->rcpt_Layout->addLayout(l);
-
+        ui->rcpt_Layout->addLayout(createRecipientRow(parent, s, i, it->hasNext()));
     }
+    connect(this->mapper, SIGNAL(mapped(int)), this, SLOT(on_btn_RemoveRecipient_clicked(int)));
 }
+
+QHBoxLayout*
+EmailDialog::createRecipientRow(QWidget *parent, Sticker *s, int i, bool hasNext) {
+    QHBoxLayout *l = new QHBoxLayout();
+    l->addWidget(this->createRecipientTypeComboBox(parent));
+
+    QLineEdit* recp = new QLineEdit(parent);
+    if (s != 0)
+        recp->setText(*s->getEMail());
+    l->addWidget(recp);
+
+    QPushButton* btn = new QPushButton(parent);
+    btn->setIcon(QIcon(":/images/images/delete_sign-20.png"));
+    l->addWidget(btn);
+    connect(btn, SIGNAL(clicked()), this->mapper, SLOT(map()));
+    mapper->setMapping(btn, i);
+
+    if (!hasNext) {
+        this->addButton = new QPushButton(parent);
+        this->addButton->setIcon(QIcon(":/images/images/plus-32.png"));
+        l->addWidget(this->addButton);
+        connect(this->addButton, SIGNAL(clicked()), this, SLOT(on_btn_AddRecipient_clicked()));
+    }
+    return l;
+}
+
 
 EmailDialog::~EmailDialog()
 {
@@ -62,12 +78,42 @@ EmailDialog::~EmailDialog()
 }
 
 
-void EmailDialog::on_btn_AddRecipient_clicked()
+void
+EmailDialog::on_btn_AddRecipient_clicked()
 {
-
+    // delete the add button and add a new one (done in createRecipientRow)
+    delete this->addButton;
+    ui->rcpt_Layout->addLayout(createRecipientRow(parent, 0, ui->rcpt_Layout->children().length(), false));
 }
 
-void EmailDialog::on_buttonBox_accepted()
+void
+EmailDialog::on_btn_RemoveRecipient_clicked(int i) {
+    qDebug() << "Remove recipient clicked on row " << i;
+
+    QHBoxLayout *layout = (QHBoxLayout*) ui->rcpt_Layout->itemAt(i);
+    QLayoutItem *item;
+    while ((item = layout->itemAt(0)) != 0) {
+
+        QWidget *w = item->widget();
+
+        // according to docs caller is responsible for setting
+        // the new geometry on the widget
+        layout->removeWidget(w);
+        w->setVisible(false);
+    }
+    delete layout;
+
+    // append the add button to the row at i-1
+    if (i > 0) {
+        QHBoxLayout* l = (QHBoxLayout*) ui->rcpt_Layout->itemAt(i-1);
+        l->addWidget(this->addButton);
+        this->addButton->setVisible(true);
+    }
+}
+
+
+void
+EmailDialog::on_buttonBox_accepted()
 {
     QString subject = ui->le_Subject->text();
     QString message = ui->pte_Message->document()->toPlainText();
@@ -77,8 +123,8 @@ void EmailDialog::on_buttonBox_accepted()
 QWidget*
 EmailDialog::createRecipientTypeComboBox(QWidget *parent) {
     QComboBox* b = new QComboBox(parent);
-    b->addItem("To:");
-    b->addItem("CC:");
-    b->addItem("BCC:");
+    b->addItem(tr("To:"));
+    b->addItem(tr("CC:"));
+    b->addItem(tr("BCC:"));
     return b;
 }

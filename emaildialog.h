@@ -23,6 +23,8 @@ This file is part of crytext.
 #include <QWidget>
 #include <QDialog>
 #include <QList>
+#include <QGridLayout>
+#include <QSignalMapper>
 #include <QTextDocument>
 #include <service/crytextservice.h>
 
@@ -41,9 +43,8 @@ public:
     ~EmailDialog();
 
 private slots:
-
-
     void on_btn_AddRecipient_clicked();
+    void on_btn_RemoveRecipient_clicked(int i);
 
     void on_buttonBox_accepted();
 
@@ -53,7 +54,11 @@ private:
     CryTextService* service;
     const QTextDocument *document;
 
+    QHBoxLayout *createRecipientRow(QWidget* parent, crytext::Sticker *s, int i, bool hasNext);
     QWidget* createRecipientTypeComboBox(QWidget *parent);
+
+    QPushButton *addButton;
+    QSignalMapper *mapper;
 };
 
 #endif // EMAILDIALOG_H

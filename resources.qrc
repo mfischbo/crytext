@@ -18,5 +18,6 @@
         <file>images/delete_sign-20.png</file>
         <file>images/delete_sign-red-20.png</file>
         <file>images/crypted.png</file>
+        <file>images/plus-32.png</file>
     </qresource>
 </RCC>
